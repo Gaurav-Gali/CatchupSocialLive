@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch Up</title>
+    <!-- FA-CDN -->
+
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+
+    <!-- Links -->
+    <link rel="stylesheet" href="/static/css/post_list.css">
+</head>
+<body>
+
+    <nav>
+        <div class="container">
+            <a href="{% url 'post-list' %}" style = "color:black;">
+            <h2 class="logo">
+                Catch Up
+            </h2>
+            </a>
+
+            <div class="search-bar" >
+                <form method="GET" action="{% url 'profile-search' %}">
+                    {% csrf_token %}
+                    <i class="fas fa-search"></i>
+                    <input type="search" name = "query" value = "{{ request.GET.query }}" placeholder="Search for people who interests you , get latest News and happening">
+                </form>
+            </div>
+            
+            <div class="create">
+                
+                <a href="{% url 'profile' request.user.profile.pk %}">
+                    <label class="btn btn-primary" for="create-post">Profile</label>
+                </a>
+
+            </div>
+
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <!-- Left -->
+            <div class="left">
+               
+
+                <div class="sidebar">
+                    <a  class="menu-item " href="{% url 'post-list' %}" style="color: hsl(255,75%,60%);">
+                        <span><i class="fas fa-home"></i></span> <h3>Home</h3>
+                    </a>
+
+                    <a  class="menu-item " href="{% url 'post-detail' object.pk %}" style="color: hsl(255,75%,60%);">
+                        <span><i class="fas fa-envelope"></i></i></span> <h3>Post</h3>
+                    </a>
+
+                    <a class="menu-item active">
+                        <span><i class="fas fa-trash"></i></span> <h3>Delete Post</h3>
+                    </a>
+
+                     <a class="menu-item" href = "{% url 'account_logout' %}" style="color: hsl(255,75%,60%);">
+                        <span><i class="fas fa-angle-double-left"></i></span> <h3>Sign Out</h3>
+                    </a>
+                </div>
+
+               
+ 
+            </div>
+            <!-- Middle -->
+            <div class="middle">
+               
+                <form class="create-post" style="flex-direction: column; padding: 19%; " method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                        
+                        <h2>Deleting Your Post !</h2>
+                        <br>
+                        <p style="color: grey">
+                            Are you sure ?
+                        </p>
+                        <br>
+                        <input type="submit" value="Delete" class="btn btn-primary">
+
+                </form>
+
+
+<script src="/static/js/post_list.js"></script>
+
+</body>
+</html>
+

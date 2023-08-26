@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch Up</title>
+    <!-- FA-CDN -->
+
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+
+    <!-- Links -->
+    <link rel="stylesheet" href="/static/css/post_list.css">
+    <link rel="stylesheet" href="/static/css/general.css">
+    <link rel="stylesheet" href="/static/css/notifications.css">
+
+    <style>
+        .body a{
+            text-decoration: none;
+            color: hsl(255,75%,60%);
+        }
+        
+    </style>
+    
+</head>
+<body>
+    {% load custom_tags %}
+    {% load static %}
+    <nav>
+        <div class="container">
+            <a href="{% url 'post-list' %}" style = "color:black;">
+            <h2 class="logo">
+                Catch Up
+            </h2>
+            </a>
+
+            <div class="search-bar" >
+                <form method="GET" action="{% url 'profile-search' %}">
+                    {% csrf_token %}
+                    <i class="fas fa-search"></i>
+                    <input type="search" name = "query" value = "{{ request.GET.query }}" placeholder="Search for people who interests you , get latest News and happening">
+                </form>
+            </div>
+            
+            <div class="create">
+                
+                <a href="{% url 'profile' request.user.profile.pk %}">
+                    <label class="btn btn-primary" for="create-post">Profile</label>
+                </a>
+
+            </div>
+
+        </div>
+    </nav>
+    <main>
+        <div class="container">
+            <!-- Left -->
+            <div class="left">
+                <div class="profile" >
+                    
+                    
+                    <div class="handle" id = "user-profile-handle" style="padding-left:30%">
+                        {% comment %} <div style="margin-right: 0.45rem; width: 4.5rem;">
+                            <img src="{{ user.profile.picture.url }}" alt="" style="max-width: 50px;max-height: 50px; height: 50px;border-radius: 25px;object-fit: cover;">
+                        </div> {% endcomment %}
+                        <div>  
+                            <h4>{{ request.user }}</h4>
+                            <p class="text-muted">@{{ request.user }}</p>
+                        </div>
+                 
+                    </div>
+                
+
+                </div>
+
+                <div class="sidebar">
+                    <a  class="menu-item" href="{% url 'post-list' %}" style="color: hsl(255,75%,60%);">
+                        <span><i class="fas fa-home"></i></span> <h3>Home</h3>
+                    </a>
+
+                    <a  class="menu-item" href="{% url 'inbox' %}" style="color: hsl(255,75%,60%);">
+                        <span><i class="fas fa-user-friends"></i></span> <h3>Social</h3>
+                    </a>
+
+                    <a class="menu-item active" href="{% url 'explore' %}">
+                        <span><i class="fas fa-map-marked-alt"></i></span> <h3 style="color: hsl(255,75%,60%);">Explore</h3>
+                    </a>
+
+                     
+
+                     <a class="menu-item" href = "{% url 'account_logout' %}" style="color: hsl(255,75%,60%);">
+                        <span><i class="fas fa-angle-double-left"></i></span> <h3>Sign Out</h3>
+                    </a>
+                </div>
+
+               
+ 
+            </div>
+            <!-- Middle -->
+            <div class="middle">
+
+                <div class = "explore-form-message">
+               
+                <form class="create-post" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                        
+                        {{explore_form}}
+
+                        <input type="submit" value="Explore" class="btn btn-primary">
+
+                </form>
+
+                <div class = "tag_search_name">
+                    {% if tag %}
+                        <h3>
+                           Explore #{{ tag.name }}
+                        </h3>
+                    {% else %}
+                        <h3>
+                            Explore
+                        </h3>
+                    {% endif %}
+                </div>
+            </div>
+            <!-- Feeds -->
+
+                <div class="feeds">
+        
+                {% for post in posts %}
+                
+                <!-- Feeds 1-->
+                
+                    <div class="feed">
+                        
+                        <div class="head">
+                        
+                            <div class="user">
+                                {% comment %} <div >
+                                    <img src="{{post.author.profile.picture.url}}" alt="" style="max-width: 50px;max-height: 50px; height: 50px;border-radius: 25px;object-fit: cover;"/>
+                                </div> {% endcomment %}
+
+                                <div class="info">
+                                    <div>
+                                    <h3>
+                                        <a href="{% url 'profile' post.author.profile.pk %}" style="color: hsl(255,75%,60%);text-decoration: underline;">
+                                            {{ post.author }}
+                                        </a>
+                                    </h3>
+                                    </div>
+                                    <small>
+                                        {{ post.created_on }}
+                                    </small>
+                                </div>
+<!--space-->
+                            </div>
+
+                            <a href="{% url 'post-detail' post.pk %}" style="color: #000;">
+                                {% if post.image.count > 0 %}
+                                    <div class="photo">
+                                        <div class = "grid-row">
+                                            {% for img in post.image.all %}
+                                                <div class = "grid-col">
+                                                    <img src="{{ img.image.url }}" alt="">
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                           
+                            <div class="action-button" id = "like-count-body">
+
+                                <div class="interaction-buttons">
+                                    <div class = "like-dislike" style='padding-bottom:10px; border-radius:1em'>
+                                    <div style="width: 100px;">
+                                        <form action="{% url 'like' post.pk %}" method="POST">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="next" value = "{{ request.path }}">
+                                            <button type="submit" style="border-radius: 25px;height: 35px;width: 55px;background-color:rgb(234,94,88);cursor: pointer;">
+                                                <span><i class="fas fa-heart" style="color: white;"></i>
+                                                    <p style="color: white;">{{ post.likes.all.count }}</p>
+                                                </span>
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                    <div style="width: 100px;">
+                                        <form action="{% url 'dislike' post.pk %}" method="POST">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="next" value = "{{ request.path }}">
+                                            <button type="submit" style="border-radius: 25px;height: 35px;width: 55px;background-color:rgb(234,94,88);cursor: pointer;">
+                                                <span><i class="fas fa-heart-broken" style="color: white;"></i>
+                                                    <p style="color: white;">{{ post.dislikes.all.count }}</p>
+                                                </span>
+                                                
+                                            </button>
+                                        </form>
+                                    </div>
+
+             
+
+                                    </div>
+                                    <div class="like-dislike-counter">
+                                  
+                                        
+                                    </div>
+                                    <div class = "caption" style="background-color: white;">
+                                        <div class="body">
+                                            <p>
+                                                {{ post.body }}
+                                            </p>
+                                        </div>
+                                    </div>
+        <br>
+                                    <div class="comments text-muted">
+                                        View Comments
+                                    </div>
+        
+                                </div>
+                                    
+                                </div>
+
+                            </a>
+
+                            </div>
+
+                            
+                    
+                    
+ <!--
+                    <div class="comment-reply" style="margin-left: 1%;">
+                        <button onclick="shareToggle('{{ post.pk }}')" style="border-radius: 25px;height: 35px;width: 55px;background-color:hsl(255,75%,60%);cursor: pointer;margin-top: 0.395rem;color: white;margin-right:2rem;">
+                            <span  ><i class="fas fa-share-alt" style="color: white;"></i></span>
+                        </button>
+                        
+                    </div>   
+                        -->
+                
+                    </div>
+                   
+<!--
+                <div class = "share-hidden">
+                    <form class="create-post" method="POST" enctype="multipart/form-data" action = "{% url 'share-post' post.pk %}" id = "{{ post.pk }}">
+                    {% csrf_token %}
+                        {{form}}
+                        <input type="submit" value="Post" class="btn btn-primary">
+                    </form>
+                </div>
+-->
+                    {% endfor %}
+                    
+                        </div>
+
+                    </div>
+
+                        <div class = "right" >
+                            <div class = "notification-title">
+                                <i class="fas fa-bell" style="margin-right: 3%;"></i>
+                                <h3>Notifications</h3>
+                            </div>
+                            {% show_notifications %}
+                        </div>
+
+                </div>
+
+            </div>
+<!-- End of Middle -->
+
+   
+
+           
+
+    <!-- Theme Customisation -->
+
+    <div class="customize-theme">
+        <div class="card">
+            <h2>Customise Your View</h2>
+            <p class="text-muted">Manage your font-size, colour and background.</p>
+
+            <!-- Font Sizes -->
+        
+            <div class="font-size">
+                <h4>Font Size</h4>
+                <div>
+                    <h6>Aa</h6>
+                <div class="choose-size">
+                    <span class="font-size-1"></span>
+                    <span class="font-size-2"></span>
+                    <span class="font-size-3 active"></span>
+                    <span class="font-size-4"></span>
+                    <span class="font-size-5"></span>
+                </div>
+                <h3>Aa</h3>
+            </div>
+        </div>
+
+        <!-- Primary Colors -->
+        <div class="color">
+            <h4>Accent</h4>
+            <div class="choose-color">
+                <span class="color-1 active"></span>
+                <span class="color-2"></span>
+                <span class="color-3"></span>
+                <span class="color-4"></span>
+                <span class="color-5"></span>
+            </div>
+        </div>
+
+        <!-- Background Colors -->
+
+        <div class="background">
+            <h4>Background</h4>
+            <div class="choose-bg">
+                <div class="bg-1 active">
+                     <span></span>
+                     <h5 for="bg-1">Light</h5>
+                </div>
+                <div class="bg-2">
+                     <span></span>
+                     <h5 for="bg-2">Dark</h5>
+                </div>
+                <div class="bg-3">
+                     <span></span>
+                     <h5 for="bg-3">Matte</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="{% static 'js/social.js' %}"></script>
+<script src="/static/js/post_list.js"></script>
+
+</body>
+</html>
+

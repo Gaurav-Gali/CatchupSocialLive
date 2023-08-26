@@ -1,0 +1,99 @@
+       <!-- Middle -->
+       <span class = "counting" style="display: none;">
+            {{ notifications.count }}
+        </span>     
+       <div class="middle_in_notify" style="display: show">
+                           
+            <!-- Feeds -->
+
+                <div class="feeds">
+
+                    <div>
+                        
+                        <div id = "notification-container">
+                            {% for notification in notifications %}
+                                {% if notification.post %}
+                                    {% if notification.notification_type == 1 %}
+                                        <div class = "group">
+                                            <a href="{% url 'post-notification' notification.pk notification.post.pk %}">
+                                                <h5>
+                                                    {{ notification.from_user }} Liked your post
+                                                </h5>
+                                            </a>
+                                            <span onclick="removeNotification(`{% url 'notification-delete' notification.pk %}` , `{{ request.path }}`)">
+                                                <i class="fas fa-times-circle"></i>
+                                            </span>
+                                        </div>
+                                    {% elif notification.notification_type == 2 %}
+                                    <!--
+                                    <div class = "group">
+                                        <a href="{% url 'post-notification' notification.pk notification.post.pk %}">
+                                            <h5>
+                                                {{ notification.from_user }} Commented on your post
+                                            </h5>
+                                            
+                                        </a>
+                                        <span onclick="removeNotification(`{% url 'notification-delete' notification.pk %}` , `{{ request.path }}`)">
+                                            <i class="fas fa-times-circle"></i>
+                                        </span>
+                                    </div>
+                                    -->
+                                    {% endif %}
+                                    {% elif notification.comment %}
+                                        {% if notification.notification_type == 1 %}
+                                            <div class = "group">
+                                                <a href="{% url 'post-notification' notification.pk notification.comment.post.pk %}">
+                                                    <h5>
+                                                        {{ notification.from_user }} Liked your comment
+                                                    </h5>
+                                                
+                                                </a>
+                                                <span onclick="removeNotification(`{% url 'notification-delete' notification.pk %}` , `{{ request.path }}`)">
+                                                    <i class="fas fa-times-circle"></i>
+                                                </span>
+                                            </div>
+                                    
+                                            
+                                        {% elif notification.notification_type == 2 %}
+                                            <div class = "group">
+                                                <a href="{% url 'post-notification' notification.pk notification.comment.post.pk %}">
+                                                    <h5>
+                                                        {{ notification.from_user }} Replied to your comment
+                                                    </h5>
+                                                    
+                                                </a>
+                                                <span onclick="removeNotification(`{% url 'notification-delete' notification.pk %}` , `{{ request.path }}`)">
+                                                    <i class="fas fa-times-circle"></i>
+                                                </span>
+                                            </div>
+                                    {% endif %}
+                                    {% elif notification.thread %}
+                                    <div class = "group">
+                                        <a href="{% url 'thread-notification' notification.pk notification.thread.pk %}">
+                                            <h5>
+                                                {{ notification.from_user }} Sent you a message
+                                            </h5>
+                                            
+                                        </a>
+                                        <span onclick="removeNotification(`{% url 'notification-delete' notification.pk %}` , `{{ request.path }}`)">
+                                            <i class="fas fa-times-circle"></i>
+                                        </span>
+                                    </div>        
+                                    {% else %}
+                                        <div class = "group">
+                                            <a href="{% url 'follow-notification' notification.pk notification.from_user.profile.pk %}">
+                                                <h5>
+                                                    {{ notification.from_user }} Followed You
+                                                    
+                                                </h5>
+                                                
+                                            </a>
+                                            <span onclick="removeNotification(`{% url 'notification-delete' notification.pk %}` , `{{ request.path }}`)">
+                                                <i class="fas fa-times-circle"></i>
+                                            </span>
+                                        </div>
+                                    
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>

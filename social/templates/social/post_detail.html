@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch Up</title>
+    <!-- FA-CDN -->
+
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+
+    <!-- Links -->
+    <link rel="stylesheet" href="/static/css/post_list.css">
+    <link rel="stylesheet" href="/static/css/general.css">
+    <link rel="stylesheet" href="/static/css/notifications.css">
+
+    <style>
+        .body a{
+            text-decoration: none;
+            color: hsl(255,75%,60%);
+        }
+    </style>
+</head>
+<body>
+{% load static %}
+{% load custom_tags %}
+    <nav>
+        <div class="container">
+            <a href="{% url 'post-list' %}" style = "color:black;">
+            <h2 class="logo">
+                Catch Up
+            </h2>
+            </a>
+
+            <div class="search-bar" >
+                <form method="GET" action="{% url 'profile-search' %}">
+                    {% csrf_token %}
+                    <i class="fas fa-search"></i>
+                    <input type="search" name = "query" value = "{{ request.GET.query }}" placeholder="Search for people who interests you , get latest News and happening">
+                </form>
+            </div>
+
+            <div class="create">
+                <a href="{% url 'profile' user.profile.pk %}">
+                    <label class="btn btn-primary" for="create-post">Profile</label>
+                </a>
+            </div>
+
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <!-- Left -->
+            <div class="left">
+                
+
+                <div class="sidebar">
+                    <a  class="menu-item" href="{% url 'post-list' %}">
+                        <span><i class="fas fa-home"></i></span> <h3 style="color: hsl(255,75%,60%);">Home</h3>
+                    </a>
+                    <a class="menu-item active" id="messeges-notifications">
+                        <span><i class="fas fa-envelope"></i></span> <h3 style="color: hsl(255,75%,60%);">Post</h3>
+                    </a>
+                    
+                    {% if request.user == post.author %}
+
+                    <a class="menu-item " id="messeges-notifications" href = "{% url 'post-edit' post.pk %}">
+                        <span><i class="fas fa-edit"></i></span> <h3 style="color: hsl(255,75%,60%);">Update Post</h3>
+                    </a>
+                    <a class="menu-item " id="messeges-notifications" href = "{% url 'post-delete' post.pk %}">
+                        <span><i class="fas fa-trash"></i></span> <h3 style="color: hsl(255,75%,60%);">Delete Post</h3>
+                    </a>
+
+                    {% endif %}
+                     <a class="menu-item" href = {% url 'account_logout' %} style="color: hsl(255,75%,60%);">
+                        <span><i class="fas fa-angle-double-left"></i></span> <h3>Sign Out</h3>
+                    </a>
+                </div>
+
+               
+ 
+            </div>
+            <!-- Middle -->
+            <div class="middle">
+               
+                <form class="create-post" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                        
+                        {{form}}
+
+                        <input type="submit" value="Post" class="btn btn-primary">
+
+                </form>
+               
+            <!-- Feeds -->
+            <div class="feeds">
+
+            <div class="feed">
+                        
+                <div class="head">
+                
+                    <div class="user">
+                        {% comment %} <div style="width:5rem;">
+                            <img src="{{ post.author.profile.picture.url }}" alt="" style="max-width: 50px;max-height: 50px; height: 50px;border-radius: 25px;object-fit: cover;">
+                        </div> {% endcomment %}
+
+                        <div class="info">
+                            <div>
+                            <h3>
+                                <a href="{% url 'profile' post.author.profile.pk %}" style="color: hsl(255,75%,60%);text-decoration: underline;">
+                                    {{ post.author }}
+                                </a>
+                            </h3>
+                            </div>
+                            <small>
+                                {{ post.created_on }}
+                            </small>
+                        </div>
+<!--space-->
+                    </div>
+
+                    <a href="{% url 'post-detail' post.pk %}" style="color: #000;">
+
+                        {% if post.image.count > 0 %}
+                                    <div class="photo">
+                                        <div class = "grid-row">
+                                            {% for img in post.image.all %}
+                                                <div class = "grid-col">
+                                                    <img src="{{ img.image.url }}" alt="">
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                    <div class="action-button" id = "like-count-body">
+
+                        <div class="interaction-buttons">
+                            <div class = "like-dislike" style='padding-bottom:10px; border-radius:1em'>
+                                <div style="width: 100px;">
+                                    <form action="{% url 'like' post.pk %}" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="next" value = "{{ request.path }}">
+                                        <button type="submit" style="border-radius: 25px;height: 35px;width: 55px;background-color:rgb(234,94,88);cursor: pointer;">
+                                            <span"><i class="fas fa-heart" style="color: white;"></i>
+                                            <p style="color: white;">{{ post.likes.all.count }}</p>
+                                        </span>
+                                        </button>
+                                    </form>
+                                </div>
+                                <div style="width: 100px;">
+                                    <form action="{% url 'dislike' post.pk %}" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="next" value = "{{ request.path }}">
+                                        <button type="submit" style="border-radius: 25px;height: 35px;width: 55px;background-color:rgb(234,94,88);cursor: pointer;">
+                                            <span"><i class="fas fa-heart-broken" style="color: white;"></i>
+                                            <p style="color: white;">{{ post.dislikes.all.count }}</p>
+                                        </span>
+                                        </button>
+                                    </form>
+                                </div>
+                            
+                            </div>
+                            <div class="like-dislike-counter">
+                                
+                                
+                            </div>
+                            <div class="caption" style="background-color: white;">
+                                <div class="body">
+                                    <p>
+                                        {{ post.body }}
+                                    </p>
+                                </div>
+                            </div>
+
+
+                        </div>
+                            
+                        </div>
+
+        
+
+                    </div>
+
+                    
+            </a>
+            </div>
+        </div>
+                <!--End Feed-->
+
+{% if  total != 0 %}
+<div style="margin-left:1%;margin-bottom:2%;background-color: white;border-radius: 25px;padding-left: 5%;">
+    <h3 style = "font-weight: 300;">
+        {% if total == 1 %}
+        {{total}} Comment
+        {% else %}
+        {{total}} Comments
+        {% endif %} 
+    </h3>
+</div>
+{% else %}
+        <center style='margin-top:30px;color:color: hsl(255,75%,60%);;font-weight:100'>
+            Looks Like There are no Comments yet 😅
+        </center>
+{% endif %}         
+                    {% for comment in comments  %}
+                    {% if comment.is_parent %}
+                            <div class="create-post comments" style="flex-direction: row; padding-left:6%;margin-bottom: 1%;">
+                                
+                                <div style="margin-top: 3%;" > 
+<div>
+                                    <div  style = "background-color: hsl(252,30%,95%);color:#000;border-radius: 25px; padding: 20%;padding-top: 3%;padding-bottom: 3%;">
+                                            <div style="flex-direction: row;">
+                                          
+                                                <h4>
+                                                    {{ comment.author }}
+                                                    {% if request.user == comment.author %}
+                                                    <a class="menu-item " id="messeges-notifications" href = "{% url 'comment-delete' post.pk comment.pk %}" style="margin-left: 5%;">
+                                                        <span><i class="fas fa-trash" style="color: hsl(255,75%,60%);"></i></span>
+                                                    </a>
+                                                    {% endif %}
+                                                </h4>
+ 
+                                            </div>
+
+                                            <div>
+                                                {{comment.created_on}}
+                                            </div>
+
+                                        </div>
+                                        <div>
+
+                                            <div class = "like-dislike" style="margin-top: 3%;">
+                                                <!--
+                                                <div style="width: 100px; margin-top: 0.3rem;">
+                                                    <form action="{% url 'comment-like' post.pk comment.pk %}" method="POST">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="next" value = "{{ request.path }}">
+                                                        <button type="submit" style="border-radius: 25px;height: 35px;width: 55px;background-color:rgb(234,94,88);cursor: pointer;">
+                                                            <span"><i class="fas fa-heart" style="color: white;"></i>
+                                                            <p style="color: white;">{{ post.likes.all.count }}</p>
+                                                        </span>
+                    
+                                                        </button>
+                                        
+                                                    </form>
+                                                </div>
+                                                
+                                                <div style="width: 100px;margin-top: 0.3rem;">
+                                                    <form action="{% url 'comment-dislike' post.pk comment.pk %}" method="POST">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="next" value = "{{ request.path }}">
+                                                        <button type="submit" style="border-radius: 25px;height: 35px;width: 55px;background-color:rgb(234,94,88);cursor: pointer;">
+                                                            <span"><i class="fas fa-heart-broken" style="color: white;"></i>
+                                                            <p style="color: white;">{{ post.dislikes.all.count }}</p>
+                                                        </span>
+                                                            
+                                                        </button>
+                                                        
+                                                    </form>
+                                                </div>
+                                                -->
+                                                <!--reply button-->
+                                                    <div class="comment-reply">
+                                                        <button style="border-radius: 25px;height: 35px;width: 55px;background-color:rgb(234,94,88);cursor: pointer;margin-top: 0.395rem;color: white;margin-right:2rem;">
+                                                            <i class="fas fa-reply" onclick="commentReplyToggle('{{ comment.pk }}')"></i>
+                                                        </button>
+                                                        
+                                                    </div> 
+                                                <!-- End Reply -->
+                                        </div>
+                                    </div>
+                                    <div style="margin-left: 15%;margin-top: 3%;margin-bottom: 1%;">
+                                            <p>
+                                                {{ comment.comment }}
+                                            </p>
+                                            
+                                            </div>
+                                            
+                                    </div> 
+                                    
+                                </div>
+
+                            </div>
+<div class="hide" id="{{ comment.pk }}">
+                            <form class="create-post" method="POST" enctype="multipart/form-data" action=" {% url 'comment-reply' post.pk comment.pk %}" style="margin-bottom: 5px;">
+                                {% csrf_token %}
+                                    
+                                    {{form}}
+            
+                                    <input type="submit"  value="Reply" class="btn btn-primary">
+            
+                            </form>
+</div>
+
+                        {% for child_comment in comment.children %}
+
+                            <div style="margin-left:15%;margin-bottom:7%;background-color: white;border-radius: 25px;padding-left: 5%; position: relative;">
+                                <div  style = "background-color: white;color:#000;border-radius: 25px; padding: 20%;padding-top: 3%;padding-bottom: 3%;">
+                                  <div style="background-color: hsl(252,30%,95%);border-radius: 25px;padding: 0.3rem;padding-left: 1rem;">
+                                    <div>
+                                  
+                                        <h4>
+                                            {{ child_comment.author }}
+                                            {% if request.user == child_comment.author %}
+                                            <a class="menu-item " id="messeges-notifications" href = "{% url 'comment-delete' post.pk child_comment.pk %}" style="margin-left: 5%;">
+                                                <span><i class="fas fa-trash" style="color: hsl(255,75%,60%);"></i></span>
+                                            </a>
+                                            {% endif %}
+                                        </h4>
+
+                                    </div>
+
+                                    <div>
+                                        {{child_comment.created_on}}
+                                    </div>
+                                </div>
+
+                                    <p style="margin-left: 1rem;">
+                                        {{ child_comment.comment }}
+                                    </p>
+
+                                </div>
+                            </div>
+
+                        {% endfor %}
+
+                    {% endif %}
+                    {% endfor %}
+                        </div>
+                        
+
+                    </div>
+                    
+                </div>
+                
+            </div>
+            
+<!-- End of Middle -->
+
+           
+
+    <!-- Theme Customisation -->
+
+<script type="text/javascript" src="{% static 'js/social.js' %}"></script>
+<script src="/static/js/post_list.js"></script>
+
+</body>
+</html>
+

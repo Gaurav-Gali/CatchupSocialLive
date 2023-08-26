@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch Up</title>
+    <!-- FA-CDN -->
+
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+
+    <!-- Links -->
+    <link rel="stylesheet" href="/static/css/post_list.css">
+    <link rel="stylesheet" href="/static/css/general.css">
+    <link rel="stylesheet" href="/static/css/notifications.css">
+
+    <style>
+        .body a{
+            text-decoration: none;
+            color: hsl(255,75%,60%);
+        }
+        .grid-col-multi{
+            border: 1px solid white;
+            border-radius: 25px;
+            overflow: hidden;
+            width: 33%;
+            height: 33%;
+        }
+        .photo{
+            width:95%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    {% load custom_tags %}
+    {% load static %}
+    <nav>
+        <div class="container">
+            <a href="{% url 'post-list' %}" style = "color:black;">
+            <h2 class="logo">
+                Catch Up
+            </h2>
+            </a>
+
+            <div class="search-bar" >
+                <form method="GET" action="{% url 'profile-search' %}">
+                    {% csrf_token %}
+                    <i class="fas fa-search"></i>
+                    <input type="search" name = "query" value = "{{ request.GET.query }}" placeholder="Search for people who interests you , get latest News and happening">
+                </form>
+            </div>
+
+            <div class="create">
+                <a href="{% url 'profile' request.user.profile.pk %}">
+                    <label class="btn btn-primary" for="create-post">Profile</label>
+                </a>
+                </div>
+            </div>
+
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <!-- Left -->
+            <div class="left">
+                <div class="profile" style="justify-content: center; align-items: center;">
+                    
+
+                    <div class="handle" id = "user-profile-handle" style="padding-left:15.5%;margin-right: 19%;">
+                        {% comment %} <div  style="margin-right: 0.45rem; width: 4.5rem;">
+                            <img src="{{ request.user.profile.picture.url }}" alt="" style="max-width: 50px;max-height: 50px; height: 50px;border-radius: 25px;object-fit: cover;">
+                        </div> {% endcomment %}
+                        <div>
+                        <h4>{{ request.user }}</h4>
+                        <p class="text-muted">@{{ request.user }}</p>
+                        </div>
+        
+                    </div>
+
+                </div>
+
+                <div class="sidebar">
+                    <a  class="menu-item" href="{% url 'post-list' %}" style="color: hsl(255,75%,60%);">
+                        <span><i class="fas fa-home"></i></span> <h3>Home</h3>
+                    </a>
+
+                    <a class="menu-item active" style="color: hsl(255,75%,60%);">
+                        <span><i class="fas fa-user-circle"></i></span>
+                        <h3>
+                            Profile
+                        </h3>
+                    </a>
+                    {% if request.user == user %}
+                        <a class="menu-item" href="{% url 'profile-edit' profile.pk %}" style="color: hsl(255,75%,60%);">
+                            <span><i class="fas fa-pen-square"></i></span>
+                            <h3>
+                                Update Profile
+                            </h3>
+                        </a>
+                    {% endif %}
+ 
+                     <a class="menu-item" href = "{% url 'account_logout' %}" style="color: hsl(255,75%,60%);">
+                        <span><i class="fas fa-angle-double-left"></i></span> <h3>Sign Out</h3>
+                    </a>
+                </div>
+
+               
+ 
+            </div>
+            <!-- Middle -->
+            <div class="middle">
+
+                    <div class="profile-pic-name">
+                        {% comment %} <div style="width: 100px;">
+                            <img src="{{ profile.picture.url }}" alt="" style="max-width: 100%;max-height: 100%; height: 75px;width:75px;border-radius: 250px;object-fit: cover;"/>
+                        </div> {% endcomment %}
+
+                        <div style="text-align: center;margin-top:0rem;">
+                            {% if profile.name %}
+                                <h3 style="font-weight: 500;size: 100px;">
+                                    {{ profile.name }}
+                                </h3>
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+                    <div class="followers-count-and-button">
+
+                        <div>
+                            {% if user != request.user %}
+                            <div class="bookmark" style="margin-right: 5%;">
+                                {% if is_following %}
+                                    <form action="{% url 'remove-follower' profile.pk %}" method = "POST">
+                                        {% csrf_token %}
+                                        <span>
+                                            <button type="submit" style="background-color: rgb(214,88,100);color:white;border-radius: 25px;padding: 23%;padding-top: 17%;padding: 19%;cursor: pointer;">
+                                                <span><i class="fas fa-meteor"></i></span>
+                                            </button>
+                                        </span>
+                                    </form>
+                                {% else %}
+                                    <form action="{% url 'add-follower' profile.pk %}" method = "POST">
+                                        {% csrf_token %}
+                                        <span>
+                                            <button type="submit" style="background-color: hsl(255,75%,60%);color: white;border-radius: 25px;padding: 23%;padding-top: 17%;padding: 19%;cursor: pointer;">
+                                                <span><i class="fas fa-meteor"></i></span>
+                                            </button>
+                                        </span>
+                                    </form>
+                                {% endif %}
+                            </div>
+                            {% else %}
+                            <form>
+                                {% csrf_token %}
+                                <span>
+                                    <button style="background-color: grey;color: white;border-radius: 25px;padding: 23%;padding-top: 17%;padding: 19%;cursor: pointer;">
+                                        <span><i class="fas fa-meteor"></i></span>
+                                    </button>
+                                </span>
+                            </form>
+                            {% endif %}
+                        </div>
+
+                        <div class="comments text-muted" style='padding-bottom:10px; border-radius:1em;'>
+                            <a href="{% url 'followers-list' profile.pk %}" style="color: grey;">
+                                <h3 style="font-weight: 100;margin-right: 11%; text-align:center;">
+                                    {{ number_of_followers }}
+                                    {% if number_of_followers == 1 %}
+                                    Follower
+                                    {% else %}
+                                    Followers
+                                    {% endif %}
+                                    </h3>
+                            </a>
+                        </div>
+                    </div>
+
+                <div style="background-color: white;border-radius: 25px;padding-top: 3%;padding-bottom: 3%;padding-left: 3%; margin-top: 6%;">
+
+                    <div style="margin-left: 3%;justify-content: center;align-items: center;background-color: white;border-radius: 0em;margin-right: 5%;padding-left: 5%;padding: 1%;text-align: center;padding-left: 0;">
+                        
+                        
+                        <div style='padding-bottom:10px; border-radius:1em'>
+
+                            {% if profile.location %}
+                                <h3 style="font-weight: 200;">
+                                    {{ profile.location }}
+                                </h3>
+                            {% endif %}
+    
+                            {% if profile.birth_date %}
+                                <h3 style="font-weight: 200;">
+                                    DOB
+                                    {{ profile.birth_date }}
+                                </h3>
+                            {% endif %}
+    
+                            {% if profile.bio %}
+                                <p style="font-weight: 200; font-size: 1rem;">
+                                    {{ profile.bio }}
+                                </p>
+                            {% endif %}
+    
+                        </div>
+                    </div>
+
+                   
+
+                </div>
+                 
+            <!-- Feeds -->
+
+
+            {% if number_of_posts == 0 %}
+                        
+                        <center style='margin-top:30px;color:color: hsl(255,75%,60%);;font-weight:100'>
+                            Keep Following Me For Future Posts 😀
+                        </center>
+
+                        {% else %}
+                        
+                        <div style="background-color: white; border-radius: 25px;margin-top: 3%;padding-left: 4%;">
+                            <h3 style="font-weight: 200; text-align:center;" >
+                                {% if all_posts != 1 %}
+                                {{all_posts}} Posts
+                                {% else %}
+                                {{all_posts}} Post
+                                {% endif %}
+                            </h3>
+                        </div>
+                        {% endif %}
+                        
+        <div class="feeds">
+
+                {% for post in posts %}
+                
+                <!-- Feeds 1-->
+               
+                                    
+                <div class="feed">
+                        
+                    <div class="head">
+                    
+                        <div class="user">
+                            {% comment %} <div  style="width: 5rem;">
+                                <img src="{{ post.author.profile.picture.url }}" alt="" style="max-width: 50px;max-height: 50px; height: 50px;border-radius: 25px;object-fit: cover;"> 
+                            </div> {% endcomment %}
+
+                            <div class="info">
+                                <div>
+                                <h3>
+                                    <a href="{% url 'profile' post.author.profile.pk %}" style="color: hsl(255,75%,60%);text-decoration: underline;">
+                                        {{ post.author }}
+                                    </a>
+                                </h3>
+                                </div>
+                                <small>
+                                    {{ post.created_on }}
+                                </small>
+                            </div>
+<!--space-->
+                        </div>
+
+                        <a href="{% url 'post-detail' post.pk %}" style="color: #000;">
+
+                            {% if post.image.count > 0 %}
+                                    <div class="photo">
+                                        <div class = "grid-row">
+                                            {% for img in post.image.all %}
+                                            {% if post.image.count == 1 %}
+                                                <div class = "grid-col">
+                                                    <img src="{{ img.image.url }}" alt="">
+                                                </div>
+                                            {% else %}
+                                                <div class = "grid-col-multi">
+                                                    <img src="{{ img.image.url }}" alt="">
+                                                </div>
+                                            {% endif %}
+
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            
+                        <div class="action-button" id = "like-count-body">
+
+                            <div class="interaction-buttons">
+                                <div class = "like-dislike" style='padding-bottom:10px; border-radius:1em'>
+                                <div style="width: 100px;">
+                                    <form action="{% url 'like' post.pk %}" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="next" value = "{{ request.path }}">
+                                        <button type="submit" style="border-radius: 25px;height: 35px;width: 55px;background-color:rgb(234,94,88);cursor: pointer;">
+                                            <span"><i class="fas fa-heart" style="color: white;"></i>
+                                            <p style="color: white;">{{ post.likes.all.count }}</p>
+                                        </span>
+                                        </button>
+                                    </form>
+                                </div>
+                                <div style="width: 100px;">
+                                    <form action="{% url 'dislike' post.pk %}" method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="next" value = "{{ request.path }}">
+                                        <button type="submit" style="border-radius: 25px;height: 35px;width: 55px;background-color:rgb(234,94,88);cursor: pointer;">
+                                            <span"><i class="fas fa-heart-broken" style="color: white;"></i>
+                                            <p style="color: white;">{{ post.dislikes.all.count }}</p>
+                                        </span>
+                                        </button>
+                                    </form>
+                                </div>
+                                
+                                </div>
+                                <div class="like-dislike-counter">
+                                    
+                                    
+                                </div>
+                                
+                                <div class="caption" style="background-color: white;">
+                                    <div class="body">
+                                        <p>
+                                            {{ post.body }}
+                                        </p>
+                                    </div>
+                                </div>
+    <br>
+                                <div class="text-muted" style='font-size:70%'>
+                                    View Comments
+                                </div>
+    
+                            </div>
+                                
+                            </div>
+
+            
+
+                        </div>
+
+                    </a>
+               
+                </div>
+                
+
+                    {% endfor %}
+                    
+                        </div>
+                        
+
+                    </div>
+                    <div class = "right" >
+                        <div class = "notification-title">
+                            <i class="fas fa-bell" style="margin-right: 3%;"></i>
+                            <h3>Notifications</h3>
+                        </div>
+                        {% show_notifications %}
+                    </div>
+
+                </div>
+
+            </div>
+<!-- End of Middle -->
+
+<script type="text/javascript" src="{% static 'js/social.js' %}"></script>
+<script src="/static/js/post_list.js"></script>
+
+</body>
+</html>
+

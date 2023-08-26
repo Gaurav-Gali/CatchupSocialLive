@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch Up</title>
+    <!-- FA-CDN -->
+
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+
+    <!-- Links -->
+    <link rel="stylesheet" href="/static/css/post_list.css">
+    <link rel="stylesheet" href="/static/css/general.css">
+    <link rel="stylesheet" href="/static/css/messaging.css">
+    <style>
+        footer{
+            position: sticky;
+            bottom: 0rem;
+            margin-bottom: 1rem;
+            border: 2px solid rgb(240 , 238 , 245);
+            border-radius: 25px;
+            padding-bottom: 1rem;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            background-color: rgb(240 , 238 , 245);
+            
+        }
+
+        .top-name-backgroung{
+            position:sticky;
+            top:3.9995rem;
+            border: 2px solid rgb(240 , 238 , 245);
+            border-radius: 25px;
+            background-color: rgb(240 , 238 , 245);
+            margin-top: 0rem;
+            padding-top: 1rem;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+    </style>
+</head>
+<body>
+{% load crispy_forms_tags %}
+<nav>
+    <div class="container">
+        <a href="{% url 'post-list' %}" style = "color:black;">
+        <h2 class="logo">
+            Catch Up
+        </h2>
+        </a>
+
+        <div class="search-bar" >
+            <form method="GET" action="{% url 'profile-search' %}">
+                {% csrf_token %}
+                <i class="fas fa-search"></i>
+                <input type="search" name = "query" value = "{{ request.GET.query }}" placeholder="Search for people who interests you , get latest News and happening">
+            </form>
+        </div>
+        
+        <div class="create">
+            
+            <a href="{% url 'profile' request.user.profile.pk %}">
+                <label class="btn btn-primary" for="create-post">Profile</label>
+            </a>
+
+        </div>
+
+    </div>
+</nav>
+
+    <main>
+        <div class="container">
+            <!-- Left -->
+            <div class="left">
+                <div class="profile">
+                    
+                    
+                    <div class="handle" id = "user-profile-handle" style="padding-left:30%">
+                        {% comment %} <div style="margin-right: 0.45rem; width: 4.5rem;">
+                            <img src="{{ user.profile.picture.url }}" alt="" style="max-width: 50px;max-height: 50px; height: 50px;border-radius: 25px;object-fit: cover;">
+                        </div> {% endcomment %}
+                        <div>  
+                            <h4>{{ request.user }}</h4>
+                            <p class="text-muted">@{{ request.user }}</p>
+                        </div>
+                 
+                    </div>
+                
+
+                </div>
+
+                <div class="sidebar">
+                    <a  class="menu-item" href="{% url 'post-list' %}" style="color: hsl(255,75%,60%);">
+                        <span><i class="fas fa-home"></i></span> <h3>Home</h3>
+                    </a>
+
+                    <a class="menu-item active">
+                        <span><i class="far fa-comment-dots"></i></span> <h3 style="color: hsl(255,75%,60%);">Chat</h3>
+                    </a>
+
+                    <a class="menu-item" href = "{% url 'inbox' %}">
+                        <span><i class="fas fa-user-friends"></i></span> <h3 style="color: hsl(255,75%,60%);">Social</h3>
+                    </a>
+
+                     <a class="menu-item" href = "{% url 'account_logout' %}" style="color: hsl(255,75%,60%);">
+                        <span><i class="fas fa-angle-double-left"></i></span> <h3>Sign Out</h3>
+                    </a>
+                </div>
+
+               
+ 
+            </div>
+            <!-- Middle -->
+        <div class="middle">
+                           
+            <!-- Feeds -->
+                 
+                <!-- convos -->
+
+                    <!-- Feeds 1-->
+                    <div class = "top-name-backgroung">
+                        <div class="feed" id = "username-at-top">
+                            {% if thread.receiver == request.user %}
+                                <h4>
+                                    {{ thread.user }}
+                                </h4>
+                            {% else %}
+                                <h4>
+                                    {{ thread.receiver }}
+                                </h4>
+                            {% endif %}
+                        </div>
+
+                        {% if message_list.all.count == 0 %}
+                            <div class = "default-info">
+                                <h3>
+                                    Start Texting
+                                </h3>
+                            </div>
+                        {% endif %}
+                    </div>
+<div class = "messages-body">
+                        {% for message in message_list %}
+                            <div>
+
+                                <div class = "sender-receiver-align">
+                                     {% if message.sender_user == request.user %}
+                                        <div class = "message-sender">
+                                            {% if message.image %}
+                                                <div class="photo-message">
+                                                    <img src="{{ message.image.url }}"  alt=""/>
+                                                </div>
+                                            {% endif %}
+
+                                                <p style='font-weight:100'>
+                                                    {{ message.body }} 
+                                                </p>
+                                        </div>
+                                    {% elif message.receiver_user == request.user %}
+                                        <div class = "message-receiver" style='display:flex;align-items:center;justify-content:flex-end;'>
+                                            {% if message.image %}
+                                                <div class="photo-message">
+                                                    <img src="{{ message.image.url }}"  alt=""/>
+                                                </div>
+                                            {% endif %}
+                                            <p style='font-weight:100'>
+                                                {{ message.body }}
+                                            </p>
+                                        </div>
+                                     {% endif %}
+                                </div>
+
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <footer>
+                        <div class="middle">
+
+                            <form class="create-post" method="POST" enctype="multipart/form-data" action = "{% url 'create-message' thread.pk %}">
+                                {% csrf_token %}
+                                    {{ form }}                    
+                                    <input type="submit" value="Send" class="btn btn-primary">
+        
+                            </form>
+        
+                        </div>
+                    </footer>
+                <!-- End convos -->
+
+        </div>
+<!-- End of Middle -->
+
+
+<script src="/static/js/post_list.js"></script>
+
+</body>
+</html>
+

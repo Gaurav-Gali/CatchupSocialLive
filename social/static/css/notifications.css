@@ -1,0 +1,59 @@
+.middle_in_notify{
+    background-color: white;
+    margin-top: 1.75rem;
+    width: 20rem;
+    padding: 0.75rem;
+    border-radius: 25px;
+}
+
+#notification-container{
+    color: grey;
+}
+
+#notification-container a{
+    color: hsl(255,75%,60%);
+    transition: 0.4s ease-in-out;
+}
+
+#notification-container a:hover{
+    color: rgb(234,94,88);
+}
+
+h5{
+    background-color: rgb(240, 238, 245);
+    border-radius: 25px;
+    padding: 0.75rem;
+    text-align: center;
+    font-weight: 250;
+}
+
+.right .notification-title{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: grey;
+    background-color: white;
+    border-radius: 25px;
+    width: 20rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.575rem;
+}
+
+.right .notification-title h3{
+    font-weight: 300;
+}
+
+.right{
+    margin-top: 1%;
+}
+
+.counting{
+    background-color: white;
+    border-radius: 25px;
+    padding: 0.5rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    margin-left: 0.3rem;
+    color: grey;
+}

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch Up</title>
+    <!-- FA-CDN -->
+
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+
+    <!-- Links -->
+    <link rel="stylesheet" href="/static/css/post_list.css">
+    <link rel="stylesheet" href="/static/css/general.css">
+    <style>
+        .profile-name-message{
+            background-color:rgb(240,238,245);
+            display: flex;
+            text-align: center;
+            padding: 0.5rem;
+            
+        }
+        .head:hover{
+            background-color: rgb(240,238,245);
+            border-radius: 25px;
+            transition: 0.1s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="container">
+            <a href="{% url 'post-list' %}" style = "color:black;">
+            <h2 class="logo">
+                Catch Up
+            </h2>
+            </a>
+
+            <div class="search-bar" >
+                <form method="GET" action="{% url 'profile-search' %}">
+                    {% csrf_token %}
+                    <i class="fas fa-search"></i>
+                    <input type="search" name = "query" value = "{{ request.GET.query }}" placeholder="Search for people who interests you , get latest News and happening">
+                </form>
+            </div>
+            
+            <div class="create">
+                
+                <a href="{% url 'profile' request.user.profile.pk %}">
+                    <label class="btn btn-primary" for="create-post">Profile</label>
+                </a>
+
+            </div>
+
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <!-- Left -->
+            <div class="left">
+                <div class="profile">
+                    
+                    
+                    <div class="handle" id = "user-profile-handle" style="padding-left:30%">
+                        {% comment %} <div  style="margin-right: 0.45rem; width: 75px;height:50px;">
+                            <img src="{{ user.profile.picture.url }}" alt="" style="max-width: 50px;max-height: 50px; height: 50px;border-radius: 25px;object-fit: cover;">
+                        </div> {% endcomment %}
+                        <div>  
+                            <h4>{{ request.user }}</h4>
+                            <p class="text-muted">@{{ request.user }}</p>
+                        </div>
+                 
+                    </div>
+                
+
+                </div>
+
+                <div class="sidebar">
+                    <a  class="menu-item" href="{% url 'post-list' %}" style="color: hsl(255,75%,60%);">
+                        <span><i class="fas fa-home"></i></span> <h3>Home</h3>
+                    </a>
+
+                    <a class="menu-item active">
+                        <span><i class="fas fa-user-friends"></i></span> <h3 style="color: hsl(255,75%,60%);">Social</h3>
+                    </a>
+
+                     <a class="menu-item" href = "{% url 'account_logout' %}" style="color: hsl(255,75%,60%);">
+                        <span><i class="fas fa-angle-double-left"></i></span> <h3>Sign Out</h3>
+                    </a>
+                </div>
+
+               
+ 
+            </div>
+            <!-- Middle -->
+        <div class="middle">
+                           
+            <!-- Feeds -->
+                <div class="middle">
+
+                    <form class="create-post" method="POST" enctype="multipart/form-data" action = "{% url 'create-thread' %}">
+                        {% csrf_token %}
+                                            
+                            <input type="submit" value="Find" class="btn btn-primary">
+
+                    </form>
+
+                </div>
+
+                <!-- convos -->
+                {% for thread in threads.all %}
+                <div class="feeds">
+
+                    {% if number_of_messages == 0 %}
+                        <center style='margin-top:30px;color:color: hsl(255,75%,60%);;font-weight:100'>
+                            OOPS 😕 <br/>
+                            There are no chats yet
+                        </center>
+                    {% endif %}
+                    
+                    <!-- Feeds 1-->
+                    <a href="{% url 'thread' thread.pk %}" style="color: hsl(255,75%,60%);">
+                        <div class="feed">
+                            
+                            <div class="head">
+                            
+                                <div class="user">
+                                    
+                                    <div class="info">
+                                        <div class = "profile-name-message" style = "width:20rem;border-radius:25px;">
+
+                                            {% comment %} <div  style="margin-right: 0.45rem; width: 50px;height:50px;">
+                                                {% if request.user == thread.user %}
+                                                    <img src="{{ thread.receiver.profile.picture.url }}" alt="" style="max-width: 50px;max-height: 50px; height: 50px;border-radius: 25px;object-fit: cover;"> 
+                                                {% else %}
+                                                    <img src="{{ thread.user.profile.picture.url }}" alt="" style="object-fit: contain;">
+                                                {% endif %}
+                                                
+                                            </div> {% endcomment %}
+
+                                            <h3 style="padding-left: 0.75rem;margin-top: 0rem;">
+                                                {% if request.user == thread.user %}
+                                                    {{ thread.receiver }}
+                                                {% else %}
+                                                    {{ thread.user }}
+                                                {% endif %}
+                                            </h3>
+
+                                        </div>
+                                        
+                                    </div>
+    <!--space-->
+                                </div>
+                                
+                               
+                        </div>
+                    </a>
+                        
+
+                <!-- End convos -->
+
+        </div>
+        {% endfor %}
+<!-- End of Middle -->
+
+
+
+<script src="/static/js/post_list.js"></script>
+
+</body>
+</html>
+

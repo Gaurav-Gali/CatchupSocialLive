@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch Up</title>
+    <!-- FA-CDN -->
+
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+
+    <!-- Links -->
+    <link rel="stylesheet" href="/static/css/post_list.css">
+    <link rel="stylesheet" href="/static/css/general.css">
+    
+</head>
+<body>
+
+    <nav>
+        <div class="container">
+            <a href="{% url 'post-list' %}" style = "color:black;">
+            <h2 class="logo">
+                Catch Up
+            </h2>
+            </a>
+
+            <div class="search-bar">
+                <form>
+                    {% csrf_token %}
+                    <i class="fas fa-search"></i>
+                    <input type="search" name = "query" value = "{{ request.GET.query }}" placeholder="Search for people who interests you , get latest News and happening">
+                </form>
+            </div>
+
+            <div class="create">
+                
+                <a href="{% url 'profile' user.profile.pk %}">
+                    <label class="btn btn-primary" for="create-post">Profile</label>
+                </a>
+                
+            </div>
+
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <!-- Left -->
+            <div class="left">
+                <div class="profile" style="justify-content: center; align-items: center;">
+                    
+                    
+                    <div class="handle" style="text-align: center;">
+ 
+                        <h4>{{ request.user }}</h4>
+                        <p class="text-muted">@{{ request.user }}</p>
+                 
+                    </div>
+                
+
+                </div>
+
+                <div class="sidebar">
+                    <a  class="menu-item" href="{% url 'post-list' %}" style="color: hsl(255,75%,60%);">
+                        <span><i class="fas fa-home"></i></span> <h3>Home</h3>
+                    </a>
+
+                    <a class="menu-item active">
+                        <span><i class="fas fa-search"></i></span> <h3 style="color: hsl(255,75%,60%);">Notifications</h3>
+                    </a>
+
+                     <a class="menu-item" href = "{% url 'account_logout' %}" style="color: hsl(255,75%,60%);">
+                        <span><i class="fas fa-angle-double-left"></i></span> <h3>Sign Out</h3>
+                    </a>
+                </div>
+
+               
+ 
+            </div>
+            <!-- Middle -->
+            <div class="middle">
+                           
+            <!-- Feeds -->
+
+                <div class="feeds">
+
+                    
+
+                 </div>
+<!-- End of Middle -->
+
+
+<script src="/static/js/post_list.js"></script>
+
+</body>
+</html>
+
